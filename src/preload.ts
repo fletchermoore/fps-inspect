@@ -1,30 +1,36 @@
 "use strict";
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
-var dialog = require('electron').remote.dialog;
+//var dialog = require('electron').remote.dialog;
+const { contextBridge, ipcRenderer } = require('electron');
 
 interface Window {
-    selectFile(): [string] | undefined;
-    decomposeMp4(path: string): any;
+    app: any
 }
 
+contextBridge.exposeInMainWorld(
+    'app',
+    {
+        selectFile: () => {
+            ipcRenderer.send('select-file');
+        },
 
-window.addEventListener('DOMContentLoaded', function () {
-    var replaceText = function (selector : string, text : string) {
-        var element = document.getElementById(selector);
-        if (element)
-            element.innerText = text;
-    };
-    for (var _i = 0, _a = ['chrome', 'node', 'electron']; _i < _a.length; _i++) {
-        var type = _a[_i];
-        replaceText(type + "-version", process.versions[type as keyof NodeJS.ProcessVersions]);
+        selectImage: () => {
+            ipcRenderer.send('select-image');
+        },
+
+        onFileSelected: (cb:any) => {
+            ipcRenderer.on('file-selected', (event: any, path: string) => {
+                cb(path);
+            });
+        },
+
+        onSetImage: (cb:any) => {
+            ipcRenderer.on('set-image', (event: any, path: string) => {
+                cb(path);
+            })
+        }
     }
-});
+)
 
-window.selectFile = function () {
-    return dialog.showOpenDialogSync({ properties: ['openFile', 'multiSelections'] });
-};
 
-window.decomposeMp4 = function (path : string) {
-
-}

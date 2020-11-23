@@ -6,21 +6,38 @@
 // process.
 
 
+const removeChilds = (parent: any) => {
+    while (parent.lastChild) {
+        parent.removeChild(parent.lastChild);
+    }
+};
+
+
+window.app.onFileSelected((path:string) => {
+    var selectedFileLabel = document.getElementById('selectedFileLabel');
+    if (selectedFileLabel)
+    {
+        selectedFileLabel.innerHTML = path;
+    }
+});
+
+window.app.onSetImage((path:string) => {
+    var viewer = document.getElementById('viewer');
+    if (viewer)
+    {
+        let img = new Image();
+        img.onload = () => {
+            removeChilds(viewer);
+            viewer?.appendChild(img);
+        }
+        img.src = path;
+    }
+})
 
 document.getElementById('selectFileButton')?.addEventListener('click', () => {
-    
-    var paths : [string] | undefined = window.selectFile();
-    
-    if (paths)
-    {
-        var viewer = document.getElementById('viewer');
-        if (viewer)
-        {
-            viewer.innerHTML = paths[0];
-        }
-    }
-    else
-    {
-        // user canceled
-    }
+    window.app.selectFile();       
+});
+
+document.getElementById('loadButton')?.addEventListener('click', () => {
+    window.app.selectImage();
 });
