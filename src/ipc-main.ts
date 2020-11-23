@@ -1,6 +1,7 @@
 
 const { ipcMain, dialog } = require('electron');
 const { Extractor } = require('./extractor');
+const { Tesseract } = require('./tesseract');
 const path = require('path');
 
 
@@ -31,6 +32,11 @@ ipcMain.on('select-image', function(event: any) {
         if (ext == '.jpg')
         {
             event.sender.send('set-image', paths[0]);
+            let tesseract = new Tesseract(paths[0]);
+            tesseract.preprocess();
+            tesseract.interpret().catch((error: any) => {
+                console.log('tess process error', error);
+            });
         }
     }
 });
