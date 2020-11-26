@@ -7,15 +7,8 @@
 
 import { BehaviorSubject } from 'rxjs';
 
-const fileSelectedSubject = new BehaviorSubject('');
-
-window.app.on('file-selected', (fileName: string) => {
-    fileSelectedSubject.next(fileName);
-});
-
-interface Window {
-    app: any
-}
+const fileSelected = new BehaviorSubject('');
+const statusUpdated = new BehaviorSubject('');
 
 const removeChildren = (parent: any) => {
     while (parent.lastChild) {
@@ -23,25 +16,17 @@ const removeChildren = (parent: any) => {
     }
 };
 
-fileSelectedSubject.subscribe((fileName: string) => {
-    var selectedFileLabel = document.getElementById('selectedFileLabel');
-    if (selectedFileLabel) {
-        selectedFileLabel.innerHTML = fileName;
-    }
+window.app.on('file-selected', (fileName: string) => {
+    fileSelected.next(fileName);
 });
 
 window.app.on('status-updated', (status: string) => {
-    let statusLabel = document.getElementById('statusLabel');
-    if (statusLabel)
-    {
-        statusLabel.innerText = status;
-    }
-})
+    statusUpdated.next(status);
+});
 
-window.app.onSetImage((path:string) => {
+window.app.on('image-set', (path: string) => {
     var viewer = document.getElementById('viewer');
-    if (viewer)
-    {
+    if (viewer) {
         let img = new Image();
         img.onload = () => {
             removeChildren(viewer);
@@ -51,8 +36,24 @@ window.app.onSetImage((path:string) => {
     }
 })
 
+statusUpdated.subscribe((status: string) => {
+    let statusLabel = document.getElementById('statusLabel');
+    if (statusLabel) {
+        statusLabel.innerText = status;
+    }
+});
+
+fileSelected.subscribe((fileName: string) => {
+    var selectedFileLabel = document.getElementById('selectedFileLabel');
+    if (selectedFileLabel) {
+        selectedFileLabel.innerHTML = fileName;
+    }
+});
+
+
+
 document.getElementById('selectFileButton')?.addEventListener('click', () => {
-    window.app.selectFile();       
+   window.app.selectFile();      
 });
 
 document.getElementById('loadButton')?.addEventListener('click', () => {

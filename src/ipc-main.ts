@@ -29,6 +29,9 @@ ipcMain.on('select-file', function(event : any) {
         //     console.log(error);
         // });
     }
+    else {
+        event.reply('status-updated',"Idle")
+    }
 });
 
 
