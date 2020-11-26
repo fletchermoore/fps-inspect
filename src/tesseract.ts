@@ -1,8 +1,8 @@
-const util = require('util');
-const path = require('path');
+import util from 'util';
+import path from 'path';
 //const fs = require('fs').promises;
 const exec = util.promisify(require('child_process').exec);
-const jimp = require('jimp');
+import jimp from 'jimp';
 
 
 const tess_suffix = "_tess";

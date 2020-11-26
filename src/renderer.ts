@@ -5,21 +5,38 @@
 // selectively enable features needed in the rendering
 // process.
 
+import { BehaviorSubject } from 'rxjs';
 
-const removeChilds = (parent: any) => {
+const fileSelectedSubject = new BehaviorSubject('');
+
+window.app.on('file-selected', (fileName: string) => {
+    fileSelectedSubject.next(fileName);
+});
+
+interface Window {
+    app: any
+}
+
+const removeChildren = (parent: any) => {
     while (parent.lastChild) {
         parent.removeChild(parent.lastChild);
     }
 };
 
-
-window.app.onFileSelected((path:string) => {
+fileSelectedSubject.subscribe((fileName: string) => {
     var selectedFileLabel = document.getElementById('selectedFileLabel');
-    if (selectedFileLabel)
-    {
-        selectedFileLabel.innerHTML = path;
+    if (selectedFileLabel) {
+        selectedFileLabel.innerHTML = fileName;
     }
 });
+
+window.app.on('status-updated', (status: string) => {
+    let statusLabel = document.getElementById('statusLabel');
+    if (statusLabel)
+    {
+        statusLabel.innerText = status;
+    }
+})
 
 window.app.onSetImage((path:string) => {
     var viewer = document.getElementById('viewer');
@@ -27,7 +44,7 @@ window.app.onSetImage((path:string) => {
     {
         let img = new Image();
         img.onload = () => {
-            removeChilds(viewer);
+            removeChildren(viewer);
             viewer?.appendChild(img);
         }
         img.src = path;
