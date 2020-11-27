@@ -2,6 +2,11 @@
 // Modules to control application life and create native browser window
 var _a = require('electron'), app = _a.app, BrowserWindow = _a.BrowserWindow;
 var path = require('path');
+
+const { Controller } = require('./dist/controller');
+
+let controller = new Controller();
+
 function createWindow() {
     // Create the browser window.
     var mainWindow = new BrowserWindow({
@@ -19,6 +24,7 @@ function createWindow() {
     mainWindow.loadFile('index.html');
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
+    controller.setWindow(mainWindow);
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -39,7 +45,4 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin')
         app.quit();
 });
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
 
-require('./dist/ipc-main');
