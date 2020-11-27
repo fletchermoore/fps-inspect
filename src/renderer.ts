@@ -59,3 +59,7 @@ document.getElementById('selectFileButton')?.addEventListener('click', () => {
 document.getElementById('loadButton')?.addEventListener('click', () => {
     window.app.selectImage();
 });
+
+document.getElementById('testButton')?.addEventListener('click', () => {
+    window.app.test();
+});

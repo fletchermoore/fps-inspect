@@ -10,6 +10,7 @@ export default class Model {
     public currentFileBaseName = '';
 
     fileNameSubject = new BehaviorSubject('');
+    statusSubject = new BehaviorSubject('Idle');
 
     
     setCurrentFile(filePath: string)
@@ -19,5 +20,10 @@ export default class Model {
         this.currentFileExt = path.extname(filePath);
         this.currentFileBaseName = path.basename(filePath, this.currentFileExt);
         this.fileNameSubject.next(this.currentFileBaseName);
+    }
+
+    updateStatus(status: string)
+    {
+        this.statusSubject.next(status);
     }
 }

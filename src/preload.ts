@@ -29,6 +29,10 @@ contextBridge.exposeInMainWorld(
             ipcRenderer.send('select-image');
         },
 
+        test: () => {
+            ipcRenderer.send('test');
+        },
+
         on: (channel: string, cb: any) => {
             if (channelWhiteList.includes(channel)) {
                 ipcRenderer.on(channel, (event: any, data: any) => {
