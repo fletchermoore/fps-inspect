@@ -2,9 +2,10 @@ import { BrowserWindow } from 'electron';
 import Model from './model';
 
 import { ipcMain, dialog } from 'electron';
-import { Extractor } from './extractor';
+
 import { Tesseract } from './tesseract';
 import path from 'path';
+import fs from 'fs';
 
 
 export class Controller {
@@ -37,10 +38,26 @@ export class Controller {
         this.mainWindow?.webContents.send(channel, data);
     }
 
+    // compromise, convenience
+    updateStatus(status: string)
+    {
+        this.model.updateStatus(status);
+    }
+
+    // = () => is different from a regular function declaration
+    // it allows binding of this when passed as a callback
+    // not sure why this works
     onTest = () =>
     {
-        this.model.updateStatus('test');
-        console.log('test button works');
+        try
+        {
+            let files = this.model.imageFiles();
+            this.model.updateStatus("Filed found");
+        }
+        catch(err)
+        {
+            this.model.updateStatus(err);
+        }        
     }
 
     onOpenFile = () => 
@@ -50,14 +67,7 @@ export class Controller {
         if (paths) {
             this.model.setCurrentFile(paths[0]);
             this.model.updateStatus("File selected");
-
-            // let extractor = new Extractor(paths[0]);
-            // extractor.extract().then(() => {
-            //     console.log(" it worked. now to load an image i guess");
-            // }).catch((error: any) => {
-            //     console.log("reporting error from ipcmain");
-            //     console.log(error);d
-            // });
+            this.model.extractMpeg();
         }
         else {
             this.model.updateStatus("Idle")

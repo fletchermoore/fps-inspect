@@ -4,18 +4,18 @@ const fs = require('fs').promises
 
 const exec = util.promisify(require('child_process').exec);
 
-const outFolderName = "out";
-
 export class Extractor
 {
     private videoPath: string;
     private outFolderPath: string;
+    private dirName: string;
 
     constructor(selectedPath: string)
     {
         this.videoPath = selectedPath;
         let dir = path.dirname(this.videoPath);
-        this.outFolderPath = path.join(dir, outFolderName);
+        this.dirName = path.basename(selectedPath, path.extname(selectedPath))
+        this.outFolderPath = path.join(dir, this.dirName);
     }
 
     async extract()
@@ -34,7 +34,7 @@ export class Extractor
     async runFfmpeg()
     {
         let command = "ffmpeg -i " + this.videoPath + " " +
-            path.join(this.outFolderPath, "out_%04d.jpg");
+            path.join(this.outFolderPath, this.dirName+"_%04d.jpg");
 
         try
         {
