@@ -1,83 +1,45 @@
 <template>
     <div>
 
-    <p>Status: <span id="statusLabel"></span></p>
+    <status-label/>
     <p>
       Select an MP4 video. <button v-on:click="selectFile">Open</button>
       <button v-on:click="test">Debug</button>
+      <button v-on:click="load">Load Manually</button>
     </p>
 
     <p>
-      <b>Selected File:</b> <span id="selectedFileLabel">None</span>
+      <b>Selected File:</b> <span>{{ selectedFile }}</span>
     </p>
 
-    <div id="viewer">
-      <button v-on:click="load">Load Manually</button>
-    </div>
+    <image-viewer/>
 </div>
     
 </template>
 
 <script lang=ts>
-import { BehaviorSubject } from 'rxjs';
+// @ts-ignore
+import StatusLabel from 'Components/StatusLabel.vue';
+// @ts-ignore
+import ImageViewer from 'Components/ImageViewer.vue';
 
-
-const fileSelected = new BehaviorSubject('');
-const statusUpdated = new BehaviorSubject('');
-const imageSet = new BehaviorSubject('');
-
-const removeChildren = (parent: any) => {
-    while (parent.lastChild) {
-        parent.removeChild(parent.lastChild);
-    }
-};
-
-window.app.on('file-selected', (fileName: string) => {
-    fileSelected.next(fileName);
-});
-
-window.app.on('status-updated', (status: string) => {
-    statusUpdated.next(status);
-});
-
-window.app.on('image-set', (path: string) => {
-    imageSet.next(path);
-});
-
-imageSet.subscribe((path: string) => {
-    var viewer = document.getElementById('viewer');
-    if (viewer) {
-        let img = new Image();
-        img.onload = () => {
-            removeChildren(viewer);
-            viewer?.appendChild(img);
-        }
-        img.src = path;
-    }
-    console.log('did i set image?');
-})
-
-statusUpdated.subscribe((status: string) => {
-    let statusLabel = document.getElementById('statusLabel');
-    if (statusLabel) {
-        statusLabel.innerText = status;
-    }
-});
-
-fileSelected.subscribe((fileName: string) => {
-    var selectedFileLabel = document.getElementById('selectedFileLabel');
-    if (selectedFileLabel) {
-        selectedFileLabel.innerHTML = fileName;
-    }
-});
 
 
 
 module.exports = {
   data: function() {
     return {
-      greeting: "Hello"
+      selectedFile: "None"
     };
+  },
+  components: {
+      'status-label': StatusLabel,
+      'image-viewer': ImageViewer
+  },
+  mounted: function() {
+    window.app.on('file-selected', (fileName: string) => {
+        this.selectedFile = fileName;
+    });
   },
   methods: {
       selectFile: function() {
