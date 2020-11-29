@@ -7,7 +7,7 @@ import { Extractor } from './extractor';
 export default class Model {
 
     private currentFilePath = '';
-    private currentFileDir = '';
+    private _currentFileDir = '';
     private currentFileExt = '';
     private currentFileBaseName = '';
     private currentImagePath = '';
@@ -20,7 +20,7 @@ export default class Model {
     setCurrentFile(filePath: string)
     {
         this.currentFilePath = filePath;
-        this.currentFileDir = path.dirname(filePath);
+        this._currentFileDir = path.dirname(filePath);
         this.currentFileExt = path.extname(filePath);
         this.currentFileBaseName = path.basename(filePath, this.currentFileExt);
         this.fileNameSubject.next(this.currentFileBaseName);
@@ -31,39 +31,28 @@ export default class Model {
         this.currentImageSubject.next(this.currentImagePath);
     }
 
+    outputDir() {
+        return path.join(this._currentFileDir, this.currentFileBaseName);
+    }
+
+    imageNamePattern() {
+        if (this.currentFileBaseName != '') {
+            return  '^' + this.currentFileBaseName + '_\\d+\\.jpg$';
+        } else {
+            return '^$';
+        }
+    }
+
     updateStatus(status: string)
     {
         this.statusSubject.next(status);
     }
 
-    
-    imageFiles()
-    {
-        if (this.currentFilePath != '') {
-            try {
-                const dirPath = path.join(this.currentFileDir, this.currentFileBaseName);
-                const reMatchString = '^' + this.currentFileBaseName + '_\\d+\\.jpg$';
-                console.log(reMatchString);
-                const reFilter = new RegExp(reMatchString);
-                const files = fs.readdirSync(dirPath);
-                return files.filter(file => {
-                    return reFilter.test(file);
-                });
-            }
-            catch(err) {
-                console.log(err);
-                throw Error("Failed to find images. Directory not found");
-            }
-        }
-        else
-        {
-            return [];
-        }
-    }
-
     extractMpeg()
     {
-        if (!fs.existsSync(this.currentFileDir)) {
+        console.log('about to check before extract');
+        if (!fs.existsSync(this.outputDir())) {
+            console.log('folder doesnt exist');
             let extractor = new Extractor(this.currentFilePath);
             extractor.extract().then(() => {
                 console.log(" it worked. now to load an image i guess");
@@ -72,6 +61,10 @@ export default class Model {
                 console.log("reporting error from ipcmain");
                 console.log(error);
             });
+        }
+        else
+        {
+            console.log('folder already exists. skipping extract');
         }
     }
 }

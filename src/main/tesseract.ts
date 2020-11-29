@@ -21,21 +21,35 @@ export class Tesseract
         this.filenameWithoutExt = path.basename(filepath, ext);
         this.outDir = path.dirname(filepath);
     }
+
+    async process()
+    {
+        try {
+            await this.preprocess();
+            await this.interpret();
+        }
+        catch(err) {
+            throw Error(err);
+        }
+    }
     
     async preprocess()
     {
         this.preprocessedImagePath = path.join(this.outDir, this.filenameWithoutExt + tess_suffix + ext);
-
-        jimp.read(this.filepath).then(
-            (img: any) => {                
-                img.crop(1049, 34, 136, 27)
-                    .greyscale()
-                    .invert()
-                    .write(this.preprocessedImagePath);
-            }
-        ).catch((error: any) => {
+        console.log('preprocessing', this.preprocessedImagePath);
+        try {
+            await jimp.read(this.filepath).then(
+                (img: any) => {
+                    img.crop(1049, 34, 136, 27)
+                        .greyscale()
+                        .invert()
+                        .writeAsync(this.preprocessedImagePath);
+                });
+        }
+        catch(error: any) {
             console.log('jimp error', error);
-        })
+            throw Error("Failed to jimp");
+        }
     }
 
     async interpret()
@@ -43,6 +57,8 @@ export class Tesseract
         if (this.preprocessedImagePath == '') {
             throw Error('preprocessing not done');
         }
+
+        console.log('about to interpret');
 
         let outName = path.join(this.outDir, this.filenameWithoutExt + tess_suffix);
 
@@ -57,7 +73,8 @@ export class Tesseract
         }
         catch (error)
         {
-            throw error;
+            console.log(error);
+            throw Error('Failed to interpret');
         }
     }
 }

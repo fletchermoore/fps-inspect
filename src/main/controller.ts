@@ -6,6 +6,7 @@ import { ipcMain, dialog } from 'electron';
 import { Tesseract } from './tesseract';
 import path from 'path';
 import fs from 'fs';
+import * as files  from './files';
 
 
 export class Controller {
@@ -53,15 +54,21 @@ export class Controller {
     // not sure why this works
     onTest = () =>
     {
-        try
-        {
-            let files = this.model.imageFiles();
-            this.model.updateStatus("Filed found");
-        }
-        catch(err)
-        {
-            this.model.updateStatus(err);
-        }        
+        files.matching(this.model.outputDir(), this.model.imageNamePattern())
+            .then((matchingFiles: any) => {
+                matchingFiles.forEach((name: string) => {
+                    console.log('processing '+name);
+                    let filePath = path.join(this.model.outputDir(), name);
+                    let tesseract = new Tesseract(filePath);
+                    tesseract.process().then(() => {
+                        console.log('successfullly processed ' + name);
+                    }).catch((error: string) => {
+                        console.log('tess process error', error);
+                    })
+                });
+            }).catch((err: string) => {
+                this.updateStatus(err);
+            });
     }
 
     onOpenFile = () => 
@@ -71,7 +78,7 @@ export class Controller {
         if (paths) {
             this.model.setCurrentFile(paths[0]);
             this.model.updateStatus("File selected");
-            this.model.extractMpeg(); // todo: shouldn't be responsibility of model?
+            this.model.extractMpeg(); 
         }
         else {
             this.model.updateStatus("Idle")
