@@ -7,6 +7,16 @@
 
 import { BehaviorSubject } from 'rxjs';
 
+import Vue from "vue";
+// @ts-ignore
+import App from "../src/renderer/components/App.vue";
+
+
+new Vue({
+    el: "#app",
+    render: h => h(App)
+});
+
 const fileSelected = new BehaviorSubject('');
 const statusUpdated = new BehaviorSubject('');
 
