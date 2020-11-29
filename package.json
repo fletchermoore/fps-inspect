@@ -2,7 +2,7 @@
   "name": "fps-inspect",
   "version": "1.0.0",
   "description": "A minimal Electron application",
-  "main": "main.js",
+  "main": "dist/main/main.js",
   "scripts": {
     "build": "tsc && npx webpack",
     "start": "npm run build && electron ."

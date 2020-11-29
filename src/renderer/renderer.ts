@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import Vue from "vue";
 // @ts-ignore
-import App from "../src/renderer/components/App.vue";
+import App from "../../src/renderer/components/App.vue";
 
 
 new Vue({

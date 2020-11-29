@@ -3,7 +3,7 @@
 var _a = require('electron'), app = _a.app, BrowserWindow = _a.BrowserWindow;
 var path = require('path');
 
-const { Controller } = require('./dist/controller');
+const { Controller } = require('./controller');
 
 let controller = new Controller();
 
@@ -13,7 +13,7 @@ function createWindow() {
         width: 1600,
         height: 600,
         webPreferences: {
-            preload: path.join(__dirname, 'dist/preload.js'),
+            preload: path.join(__dirname, 'preload.js'),
             enableRemoteModule: false,
             nodeIntegration: false,
             contextIsolation: true,

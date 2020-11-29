@@ -1,5 +1,5 @@
 <template>
-  <p>{{ greeting }} you!</p>
+  <p>{{ greeting }} you!d</p>
 </template>
 
 <script>
