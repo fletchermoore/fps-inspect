@@ -10,17 +10,31 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                options: {
+                    appendTsSuffixTo: [/\.vue$/]
+                }
+            },
+            {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
             {
                 test: /\.css$/,
                 loader: 'css-loader'
-            } 
+            }
         ]
     },
     plugins: [
         // make sure to include the plugin!
         new VueLoaderPlugin()
-    ]
+    ],
+    resolve:
+    {
+        alias:
+        {
+            Components: path.resolve(__dirname, 'src/renderer/components/')
+        }
+    }
 };
