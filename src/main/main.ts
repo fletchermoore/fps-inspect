@@ -7,6 +7,8 @@ const { Controller } = require('./controller');
 
 let controller = new Controller();
 
+console.log("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOoooooooooooooooooooooo");
+
 function createWindow() {
     // Create the browser window.
     var mainWindow = new BrowserWindow({
@@ -21,7 +23,8 @@ function createWindow() {
         }
     });
     // and load the index.html of the app.
-    mainWindow.loadFile('index.html');
+    console.log(`${__dirname}`);
+    mainWindow.loadFile('dist/renderer/index.html');
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
     controller.setWindow(mainWindow);

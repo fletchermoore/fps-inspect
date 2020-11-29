@@ -36,9 +36,6 @@ module.exports = {
 </script>
 
 <style scoped>
-p {
-  font-size: 2em;
-}
 img {
   width: 100%;
 }
