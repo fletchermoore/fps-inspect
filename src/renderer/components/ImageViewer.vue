@@ -38,7 +38,6 @@ module.exports = {
 <style scoped>
 p {
   font-size: 2em;
-  text-align: center;
 }
 img {
   width: 100%;
