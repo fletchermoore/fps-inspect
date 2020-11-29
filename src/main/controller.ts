@@ -7,6 +7,13 @@ import { Tesseract } from './tesseract';
 import path from 'path';
 import fs from 'fs';
 import * as files  from './files';
+import * as constants from './constants';
+
+
+interface DataPoint {
+    file: string;
+    position: Array<string>;
+}
 
 
 export class Controller {
@@ -49,26 +56,70 @@ export class Controller {
         this.model.updateStatus(status);
     }
 
+    // run tesseract over all the extracted images
+    processImages = () => {
+        files.matching(this.model.outputDir(), this.model.imageNamePattern())
+        .then((matchingFiles: any) => {
+            matchingFiles.forEach((name: string) => {
+                console.log('processing ' + name);
+                let filePath = path.join(this.model.outputDir(), name);
+                let tesseract = new Tesseract(filePath);
+                tesseract.process().then(() => {
+                    console.log('successfullly processed ' + name);
+                }).catch((error: string) => {
+                    console.log('tess process error', error);
+                })
+            });
+        }).catch((err: string) => {
+            this.updateStatus(err);
+        });
+    }
+
+    writeDataFile = (data: Array<DataPoint>) => {
+        let content = '';
+        for(let i = 0; i < data.length; i++) {
+            // console.log('i',i);
+            // console.log('data',data);
+            // console.log('position', data.position);
+            let dataPoint = data[i];
+            let line = '' + i + ',' + dataPoint.file + ',' + dataPoint.position.join(',') + constants.NEWLINE;
+            content += line;
+            // console.log(line);
+        }
+        if (this.model.dataFilePath() != '') {
+            fs.writeFile(this.model.dataFilePath(), content, 'utf8', (error) => {
+                console.log('write error', error);
+            });
+        }       
+    }
+
+    // create csv from text data
+    createDataFile = () => {
+        files.matching(this.model.outputDir(), this.model.textNamePattern())
+        .then((matchingFiles: any) => {
+            return matchingFiles.map((fullPath: string) => {
+                console.log('found',fullPath);
+                const content = fs.readFileSync(fullPath, 'utf8');
+                console.log(content);
+                const pattern = /\d+/g;
+                const matches = content.match(pattern);
+                return {
+                    file: fullPath,
+                    position: matches
+                }
+            });
+        }).then((data: Array<DataPoint>) => {
+            console.log(data);
+            this.writeDataFile(data);
+        })
+    }
+
     // = () => is different from a regular function declaration
     // it allows binding of this when passed as a callback
     // not sure why this works
     onTest = () =>
     {
-        files.matching(this.model.outputDir(), this.model.imageNamePattern())
-            .then((matchingFiles: any) => {
-                matchingFiles.forEach((name: string) => {
-                    console.log('processing '+name);
-                    let filePath = path.join(this.model.outputDir(), name);
-                    let tesseract = new Tesseract(filePath);
-                    tesseract.process().then(() => {
-                        console.log('successfullly processed ' + name);
-                    }).catch((error: string) => {
-                        console.log('tess process error', error);
-                    })
-                });
-            }).catch((err: string) => {
-                this.updateStatus(err);
-            });
+        this.createDataFile();        
     }
 
     onOpenFile = () => 

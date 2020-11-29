@@ -2,6 +2,7 @@ import path from 'path';
 import { BehaviorSubject } from 'rxjs';
 import fs from 'fs';
 import { Extractor } from './extractor';
+import * as constants from './constants';
 
 
 export default class Model {
@@ -35,9 +36,25 @@ export default class Model {
         return path.join(this._currentFileDir, this.currentFileBaseName);
     }
 
+    dataFilePath() {
+        if (this.currentFilePath != '') {
+            return path.join(this.outputDir(), this.currentFileBaseName + '.csv');
+        } else {
+            return '';
+        }
+    }
+
     imageNamePattern() {
         if (this.currentFileBaseName != '') {
             return  '^' + this.currentFileBaseName + '_\\d+\\.jpg$';
+        } else {
+            return '^$';
+        }
+    }
+
+    textNamePattern() {
+        if (this.currentFileBaseName != '') {
+            return '^' + this.currentFileBaseName + '_\\d+' +constants.POSTFIX+ '\\.txt$';
         } else {
             return '^$';
         }

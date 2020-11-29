@@ -3,9 +3,10 @@ import path from 'path';
 //const fs = require('fs').promises;
 const exec = util.promisify(require('child_process').exec);
 import jimp from 'jimp';
+import * as constants from './constants';
 
 
-const tess_suffix = "_tess";
+const tess_suffix = constants.POSTFIX;
 const ext = '.jpg';
 
 export class Tesseract
