@@ -2,8 +2,9 @@
 // Modules to control application life and create native browser window
 var _a = require('electron'), app = _a.app, BrowserWindow = _a.BrowserWindow;
 var path = require('path');
-
 const { Controller } = require('./controller');
+
+const isDev = process.env.NODE_ENV === "development";
 
 let controller = new Controller();
 
@@ -22,11 +23,19 @@ function createWindow() {
             sandbox: true
         }
     });
-    // and load the index.html of the app.
-    console.log(`${__dirname}`);
-    mainWindow.loadFile('dist/renderer/index.html');
+    if (isDev) {
+        // hot reloading and other goodness
+        console.log("dev is happening!");
+        mainWindow.loadURL("http://localhost:8080");
+        mainWindow.webContents.openDevTools();
+    }
+    else {
+        console.log('dev didnt h appen....');
+        mainWindow.loadFile('dist/renderer/index.html');
+    }
+    
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    
     controller.setWindow(mainWindow);
 }
 // This method will be called when Electron has finished

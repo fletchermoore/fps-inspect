@@ -9,7 +9,7 @@
     </p>
 
     <p>
-      <b>Selected File:</b> <span>{{ selectedFile }}</span>
+      <b>Selected FILE:</b> <span>{{ selectedFile }}</span>
     </p>
 
     <image-viewer/>

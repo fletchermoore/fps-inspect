@@ -4,12 +4,14 @@
   "description": "part of a research project",
   "main": "dist/main/main.js",
   "scripts": {
-    "build": "tsc && npx webpack",
-    "start": "npm run build && electron ."
+    "watch": "webpack serve",
+    "build": "tsc"
   },
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
+    "concurrently": "^5.3.0",
+    "cross-env": "^7.0.2",
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^5.0.1",
     "electron": "^11.0.0",
