@@ -1,13 +1,12 @@
 import path from 'path';
 import { BehaviorSubject } from 'rxjs';
 import fs from 'fs';
-import { Extractor } from './extractor';
 import * as constants from './constants';
 
 
 export default class Model {
 
-    private currentFilePath = '';
+    private _videoPath = '';
     private _currentFileDir = '';
     private currentFileExt = '';
     private currentFileBaseName = '';
@@ -20,7 +19,7 @@ export default class Model {
     
     setCurrentFile(filePath: string)
     {
-        this.currentFilePath = filePath;
+        this._videoPath = filePath;
         this._currentFileDir = path.dirname(filePath);
         this.currentFileExt = path.extname(filePath);
         this.currentFileBaseName = path.basename(filePath, this.currentFileExt);
@@ -36,8 +35,12 @@ export default class Model {
         return path.join(this._currentFileDir, this.currentFileBaseName);
     }
 
+    videoPath() {
+        return this._videoPath;
+    }
+
     dataFilePath() {
-        if (this.currentFilePath != '') {
+        if (this._videoPath != '') {
             return path.join(this.outputDir(), this.currentFileBaseName + '.csv');
         } else {
             return '';
@@ -63,25 +66,5 @@ export default class Model {
     updateStatus(status: string)
     {
         this.statusSubject.next(status);
-    }
-
-    extractMpeg()
-    {
-        console.log('about to check before extract');
-        if (!fs.existsSync(this.outputDir())) {
-            console.log('folder doesnt exist');
-            let extractor = new Extractor(this.currentFilePath);
-            extractor.extract().then(() => {
-                console.log(" it worked. now to load an image i guess");
-            }).catch((error: any) => {
-                this.updateStatus("Error during video decomposition.");
-                console.log("reporting error from ipcmain");
-                console.log(error);
-            });
-        }
-        else
-        {
-            console.log('folder already exists. skipping extract');
-        }
     }
 }

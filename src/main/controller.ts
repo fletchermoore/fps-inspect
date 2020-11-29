@@ -3,16 +3,19 @@ import Model from './model';
 
 import { ipcMain, dialog } from 'electron';
 
+import { Extractor } from './extractor';
 import { Tesseract } from './tesseract';
 import path from 'path';
 import fs from 'fs';
 import * as files  from './files';
 import * as constants from './constants';
+import { frameFrom } from './parser';
+
 
 
 interface DataPoint {
-    file: string;
-    position: Array<string>;
+    frame: string;
+    position: RegExpMatchArray | null;
 }
 
 
@@ -57,22 +60,20 @@ export class Controller {
     }
 
     // run tesseract over all the extracted images
-    processImages = () => {
-        files.matching(this.model.outputDir(), this.model.imageNamePattern())
-        .then((matchingFiles: any) => {
-            matchingFiles.forEach((name: string) => {
-                console.log('processing ' + name);
-                let filePath = path.join(this.model.outputDir(), name);
-                let tesseract = new Tesseract(filePath);
-                tesseract.process().then(() => {
-                    console.log('successfullly processed ' + name);
-                }).catch((error: string) => {
-                    console.log('tess process error', error);
-                })
-            });
-        }).catch((err: string) => {
+    processImages = async () => {
+        try {
+            const matchingFiles = files.matching(this.model.outputDir(), this.model.imageNamePattern());
+            console.log("process found # matches: ", matchingFiles.length);
+            for (let i = 0; i < matchingFiles.length; i++) {
+                let fullPath = matchingFiles[i];
+                console.log('processing ' + fullPath);
+                let tesseract = new Tesseract(fullPath);
+                await tesseract.process();
+                console.log('successfullly processed ' + fullPath);
+            }
+        } catch(err: any) {
             this.updateStatus(err);
-        });
+        }
     }
 
     writeDataFile = (data: Array<DataPoint>) => {
@@ -82,7 +83,8 @@ export class Controller {
             // console.log('data',data);
             // console.log('position', data.position);
             let dataPoint = data[i];
-            let line = '' + i + ',' + dataPoint.file + ',' + dataPoint.position.join(',') + constants.NEWLINE;
+            let imageNumbers = dataPoint.position?.join(',') ?? '';
+            let line = dataPoint.frame + ',' + imageNumbers + constants.NEWLINE;
             content += line;
             // console.log(line);
         }
@@ -95,23 +97,29 @@ export class Controller {
 
     // create csv from text data
     createDataFile = () => {
-        files.matching(this.model.outputDir(), this.model.textNamePattern())
-        .then((matchingFiles: any) => {
-            return matchingFiles.map((fullPath: string) => {
-                console.log('found',fullPath);
-                const content = fs.readFileSync(fullPath, 'utf8');
+        const matchingFiles = files.matching(this.model.outputDir(), this.model.textNamePattern())
+        const data : Array<DataPoint> = matchingFiles.map((fullPath: string) => {
+            console.log('found',fullPath);
+            try {
+                const content = fs.readFileSync(fullPath, 'utf8'); 
                 console.log(content);
                 const pattern = /\d+/g;
                 const matches = content.match(pattern);
                 return {
-                    file: fullPath,
+                    frame: frameFrom(fullPath),
                     position: matches
+                };
+            } catch(error) {
+                console.log(error);
+                console.log('open file failed:', fullPath);
+                return {
+                    frame: '-1',
+                    position: ['ERR']
                 }
-            });
-        }).then((data: Array<DataPoint>) => {
-            console.log(data);
-            this.writeDataFile(data);
-        })
+            }
+        });        
+        console.log(data);
+        this.writeDataFile(data);
     }
 
     // = () => is different from a regular function declaration
@@ -119,7 +127,8 @@ export class Controller {
     // not sure why this works
     onTest = () =>
     {
-        this.createDataFile();        
+        let testPath = 'C:\\Users\\fletcher\\projects\\fps-inspect\\demo\\briefradiant\\briefradiant_0100_tess.txt'
+        console.log(frameFrom(testPath));
     }
 
     onOpenFile = () => 
@@ -129,10 +138,39 @@ export class Controller {
         if (paths) {
             this.model.setCurrentFile(paths[0]);
             this.model.updateStatus("File selected");
-            this.model.extractMpeg(); 
+            try {
+                this.extractMpeg().then(() => {
+                    console.log('in theory, extracted, try process...');
+                    this.processImages().then(() => {
+                        console.log('in theory processed, try create datafile');
+                        this.createDataFile();
+                    })
+                });
+            } catch (err: any) {
+                this.updateStatus(err);
+            }            
         }
         else {
             this.model.updateStatus("Idle")
+        }
+    }
+
+    async extractMpeg() {
+        console.log('about to check before extract');
+        if (!fs.existsSync(this.model.outputDir())) {
+            console.log('folder doesnt exist');
+            try {
+                let extractor = new Extractor(this.model.videoPath());
+                await extractor.extract();
+            } catch (error: any) {
+                this.updateStatus("Error during video decomposition.");
+                console.log(error);
+                throw Error('Extraction from mp4 failed');
+            };
+        }
+        else {
+            console.log('folder already exists. skipping extract');
+            throw Error('Output folder already exists. Aborted.');
         }
     }
 
