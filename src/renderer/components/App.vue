@@ -1,6 +1,5 @@
 <template>
     <div>
-  <p>{{ greeting }} you!d</p>
 
     <p>Status: <span id="statusLabel"></span></p>
     <p>
@@ -25,6 +24,7 @@ import { BehaviorSubject } from 'rxjs';
 
 const fileSelected = new BehaviorSubject('');
 const statusUpdated = new BehaviorSubject('');
+const imageSet = new BehaviorSubject('');
 
 const removeChildren = (parent: any) => {
     while (parent.lastChild) {
@@ -41,6 +41,10 @@ window.app.on('status-updated', (status: string) => {
 });
 
 window.app.on('image-set', (path: string) => {
+    imageSet.next(path);
+});
+
+imageSet.subscribe((path: string) => {
     var viewer = document.getElementById('viewer');
     if (viewer) {
         let img = new Image();
@@ -50,6 +54,7 @@ window.app.on('image-set', (path: string) => {
         }
         img.src = path;
     }
+    console.log('did i set image?');
 })
 
 statusUpdated.subscribe((status: string) => {

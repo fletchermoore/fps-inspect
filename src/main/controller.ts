@@ -32,6 +32,10 @@ export class Controller {
         this.model.statusSubject.subscribe((status: string) => {
             this.notifyView('status-updated', status);
         })
+
+        this.model.currentImageSubject.subscribe((path: string) => {
+            this.notifyView('image-set', path);
+        })
     }
 
     notifyView(channel: string, data: any) {
@@ -67,7 +71,7 @@ export class Controller {
         if (paths) {
             this.model.setCurrentFile(paths[0]);
             this.model.updateStatus("File selected");
-            this.model.extractMpeg();
+            this.model.extractMpeg(); // todo: shouldn't be responsibility of model?
         }
         else {
             this.model.updateStatus("Idle")
@@ -80,12 +84,13 @@ export class Controller {
         if (paths) {
             let ext = path.extname(paths[0]);
             if (ext == '.jpg') {
-                event.sender.send('set-image', paths[0]);
-                let tesseract = new Tesseract(paths[0]);
-                tesseract.preprocess();
-                tesseract.interpret().catch((error: any) => {
-                    console.log('tess process error', error);
-                });
+                this.model.setCurrentImagePath(paths[0]);
+                //event.sender.send('set-image', paths[0]);
+                // let tesseract = new Tesseract(paths[0]);
+                // tesseract.preprocess();
+                // tesseract.interpret().catch((error: any) => {
+                //     console.log('tess process error', error);
+                // });
             }
         }
     }

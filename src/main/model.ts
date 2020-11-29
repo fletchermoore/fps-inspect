@@ -10,9 +10,11 @@ export default class Model {
     private currentFileDir = '';
     private currentFileExt = '';
     private currentFileBaseName = '';
+    private currentImagePath = '';
 
     fileNameSubject = new BehaviorSubject('');
     statusSubject = new BehaviorSubject('Idle');
+    currentImageSubject = new BehaviorSubject('');
 
     
     setCurrentFile(filePath: string)
@@ -22,6 +24,11 @@ export default class Model {
         this.currentFileExt = path.extname(filePath);
         this.currentFileBaseName = path.basename(filePath, this.currentFileExt);
         this.fileNameSubject.next(this.currentFileBaseName);
+    }
+
+    setCurrentImagePath(imagePath: string) {
+        this.currentImagePath = imagePath;
+        this.currentImageSubject.next(this.currentImagePath);
     }
 
     updateStatus(status: string)
