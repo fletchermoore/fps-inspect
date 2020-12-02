@@ -174,33 +174,12 @@ export class Controller {
         }
     }
 
-    // Todo: setup notification and remove event param
-    onSelectImage = (event: any) => {
-        var paths = dialog.showOpenDialogSync({ properties: ['openFile', 'multiSelections'] });
-        if (paths) {
-            let ext = path.extname(paths[0]);
-            if (ext == '.jpg') {
-                this.model.setCurrentImagePath(paths[0]);
-                //event.sender.send('set-image', paths[0]);
-                // let tesseract = new Tesseract(paths[0]);
-                // tesseract.preprocess();
-                // tesseract.interpret().catch((error: any) => {
-                //     console.log('tess process error', error);
-                // });
-            }
-        }
-    }
 
     setupIpc()
     {
         const onOpenFile = this.onOpenFile;
         ipcMain.on('select-file', function (event: any) {
             onOpenFile();
-        });
-
-        const onSelectImage = this.onSelectImage;
-        ipcMain.on('select-image', function (event: any) {
-            onSelectImage(event);
         });
 
         const onTest = this.onTest;

@@ -25,10 +25,6 @@ contextBridge.exposeInMainWorld(
             ipcRenderer.send('select-file');
         },
 
-        selectImage: () => {
-            ipcRenderer.send('select-image');
-        },
-
         test: () => {
             ipcRenderer.send('test');
         },

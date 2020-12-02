@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <p>Status: <span>{{ status }}</span></p>
+    <div class="text-sm-body-2">
+        Status: <span>{{ status }}</span>
     </div>    
 </template>
 
