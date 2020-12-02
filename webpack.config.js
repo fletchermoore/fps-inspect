@@ -10,7 +10,7 @@ module.exports = {
     {
         contentBase: './dist/renderer'
     },
-    entry: './src/renderer/renderer.ts',
+    entry: './src/renderer/renderer.js',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist/renderer'),
@@ -27,6 +27,30 @@ module.exports = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader'
+            },
+            {
+                test: /\.s(c|a)ss$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader',
+                    {
+                        loader: 'sass-loader',
+                        // Requires sass-loader@^7.0.0
+                        options: {
+                            implementation: require('sass'),
+                            fiber: require('fibers'),
+                            indentedSyntax: true // optional
+                        },
+                        // Requires sass-loader@^8.0.0
+                        options: {
+                            implementation: require('sass'),
+                            sassOptions: {
+                                fiber: require('fibers'),
+                                indentedSyntax: true // optional
+                            },
+                        },
+                    },
+                ],
             },
             {
                 test: /\.css$/,
@@ -55,7 +79,8 @@ module.exports = {
     {
         alias:
         {
-            Components: path.resolve(__dirname, 'src/renderer/components/')
+            Components: path.resolve(__dirname, 'src/renderer/components/'),
+            Plugins: path.resolve(__dirname, 'src/renderer/plugins')
         }
     }
 };

@@ -8,12 +8,18 @@
 
 
 import Vue from "vue";
+// import Vuetify from "vuetify";
+// import "vuetify/dist/vuetify.min.css";
 // @ts-ignore
+// import TifyTest from 'Components/TifyTest.vue';
 import App from "Components/App.vue";
+
+// @ts-ignore
+import vuetify from 'Plugins/veutify';
 
 
 new Vue({
-    el: "#app",
+    vuetify,
     render: h => h(App)
-});
+}).$mount('#app');
 

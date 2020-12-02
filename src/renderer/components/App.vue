@@ -1,19 +1,27 @@
 <template>
-    <div>
+    <v-app>
+        <v-main>
 
-    <status-label/>
-    <p>
-      Select an MP4 video. <button v-on:click="selectFile">Open</button>
-      <button v-on:click="test">Debug</button>
-      <button v-on:click="load">Load Manually</button>
-    </p>
+    <!-- Provides the application the proper gutter -->
+    <v-container fluid>
 
-    <p>
-      <b>Selected FILE:</b> <span>{{ selectedFile }}</span>
-    </p>
+        <status-label/>
+        <p>
+          Select an MP4 video. <v-btn v-on:click="selectFile">Open</v-btn>
+          <v-btn v-on:click="test">Debug</v-btn>
+          <v-btn v-on:click="load">Load Manually</v-btn>
+        </p>
 
-    <image-viewer/>
-</div>
+        <p>
+          <b>Selected FILE:</b> <span>{{ selectedFile }}</span>
+        </p>
+
+        <image-viewer/>
+    </v-container>
+  </v-main>
+
+
+</v-app>
     
 </template>
 
