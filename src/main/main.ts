@@ -1,14 +1,13 @@
 "use strict";
 // Modules to control application life and create native browser window
 var _a = require('electron'), app = _a.app, BrowserWindow = _a.BrowserWindow;
+import { protocol } from "electron";
 var path = require('path');
 const { Controller } = require('./controller');
 
 const isDev = process.env.NODE_ENV === "development";
 
 let controller = new Controller();
-
-console.log("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOoooooooooooooooooooooo");
 
 function createWindow() {
     // Create the browser window.
@@ -20,7 +19,8 @@ function createWindow() {
             enableRemoteModule: false,
             nodeIntegration: false,
             contextIsolation: true,
-            sandbox: true
+            sandbox: true,
+            webSecurity: !isDev
         }
     });
     if (isDev) {
@@ -42,6 +42,16 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(function () {
+    if (isDev)
+    {
+        // this is necessary so we can load local files when index.html does not
+        // come from the local disk, but rather http://localhost because I am using
+        // webpack dev-server
+        protocol.registerFileProtocol('file', (request, callback) => {
+            const pathname = decodeURI(request.url.replace('file:///', ''));
+            callback(pathname);
+        });
+    }
     createWindow();
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
@@ -57,4 +67,6 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin')
         app.quit();
 });
+
+
 

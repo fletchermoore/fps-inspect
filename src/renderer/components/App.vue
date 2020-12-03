@@ -20,7 +20,8 @@
           <b>Selected file:</b> <span>{{ selectedFile }}</span>
         </p>
 
-        <image-viewer/>
+        <!-- <image-viewer/> -->
+        <ocr-results-view/>
     </v-container>
   </v-main>
   <v-footer fixed>
@@ -41,7 +42,8 @@
 import StatusLabel from 'Components/StatusLabel.vue';
 // @ts-ignore
 import ImageViewer from 'Components/ImageViewer.vue';
-
+// @ts-ignore
+import OCRResultsView from 'Components/OCRResultsView.vue';
 
 
 
@@ -55,6 +57,7 @@ module.exports = {
   components: {
       'status-label': StatusLabel,
       'image-viewer': ImageViewer,
+      'ocr-results-view': OCRResultsView
       
   },
   mounted: function() {

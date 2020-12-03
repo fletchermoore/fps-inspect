@@ -127,8 +127,9 @@ export class Controller {
     // not sure why this works
     onTest = () =>
     {
-        let testPath = 'C:\\Users\\fletcher\\projects\\fps-inspect\\demo\\briefradiant\\briefradiant_0100_tess.txt'
-        console.log(frameFrom(testPath));
+        let testPath = 'C:\\Users\\fletcher\\projects\\fps-inspect\\demo\\briefradiant\\briefradiant_0100_tess.jpg'
+        this.model.setCurrentImagePath(testPath);
+        //console.log(frameFrom(testPath));
     }
 
     onOpenFile = () => 
