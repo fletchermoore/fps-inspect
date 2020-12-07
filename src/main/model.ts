@@ -28,6 +28,17 @@ export default class Model {
         return this.data;
     }
 
+    updateData(results: Array<ResultUpdate>) {
+        this.data = this.data.map(point => {
+            let correspondingResult = results.find(result => point.frame == result.frame);
+            if (correspondingResult != undefined) {
+                point.human = correspondingResult.value;
+            }
+            return point;
+        });
+        this.statusSubject.next('Success: updated data with human input');
+    }
+
     results()
     {
         return this.data.map((dataPoint) => {

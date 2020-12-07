@@ -19,12 +19,18 @@ declare global {
         frame: string;
         path: string;
         position: RegExpMatchArray | null;
+        human: string | null;
     }
 
     interface Result {
         id: number;
         src: string;
         num: string;
+    }
+
+    interface ResultUpdate {
+        frame: string;
+        value: string;
     }
 }
 
@@ -64,6 +70,10 @@ export class Controller {
         this.mainWindow?.webContents.send(channel, data);
     }
 
+    alert(message: string) {
+        this.notifyView('alert', message);
+    }
+
     // compromise, convenience
     updateStatus(status: string)
     {
@@ -94,14 +104,24 @@ export class Controller {
             // console.log('data',data);
             // console.log('position', data.position);
             let dataPoint = data[i];
-            let imageNumbers = dataPoint.position?.join(',') ?? '';
-            let line = dataPoint.frame + ',' + imageNumbers + constants.NEWLINE;
+            const machineChoice = dataPoint.position == null ? '' : dataPoint.position[0];
+            const imageNumber = dataPoint.human ?? machineChoice;
+            let comment = dataPoint.human != null ? "human override of " + machineChoice : '';
+            let line = dataPoint.frame + ',' 
+                + imageNumber + ','
+                + comment + constants.NEWLINE;
             content += line;
             // console.log(line);
         }
         if (this.model.dataFilePath() != '') {
-            fs.writeFile(this.model.dataFilePath(), content, 'utf8', (error) => {
-                console.log('write error', error);
+            fs.writeFile(this.model.dataFilePath(), content, 'utf8', (result) => {
+                if (result) {
+                    this.alert("Could not write to file! Changes not saved. Do you have the .csv file open in another program? Close it and try again.");
+                    this.updateStatus("Recent error: could not save changes");
+                }
+                else {
+                    this.updateStatus(".csv file updated");
+                }
             });
         }       
     }
@@ -118,7 +138,8 @@ export class Controller {
                 return {
                     frame: frameFrom(fullPath),
                     path: fullPath,
-                    position: matches
+                    position: matches,
+                    human: null
                 };
             } catch (error) {
                 console.log(error);
@@ -126,7 +147,8 @@ export class Controller {
                 return {
                     frame: frameFrom(fullPath),
                     path: fullPath,
-                    position: ['ERR']
+                    position: ['ERR'],
+                    human: null
                 }
             }
         });
@@ -201,6 +223,13 @@ export class Controller {
         this.notifyView('results-retrieved', this.model.results());
     }
 
+    onUpdateResults = (results: Array<ResultUpdate>) => {
+        // console.log(this.model.getData())
+        this.model.updateData(results);
+        this.writeDataFile(this.model.getData());
+        // console.log(this.model.getData());
+    }
+
 
     setupIpc()
     {
@@ -217,6 +246,11 @@ export class Controller {
         const onRetrieveResults = this.onRetrieveResults;
         ipcMain.on('retrieve-results', function (event: any) {
             onRetrieveResults();
+        });
+
+        const onUpdateResults = this.onUpdateResults;
+        ipcMain.on('update-results', function (event: any, results: Array<ResultUpdate>) {
+            onUpdateResults(results);
         });
     }
 

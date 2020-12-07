@@ -3,7 +3,8 @@
     <v-card flat tile class="mr-6">{{ frame }}</v-card>
     <v-card flat tile><img :src="imageSrc"/> </v-card>
     <v-card flat tile><v-text-field dense class="mx-8 my-0 pa-0 ocr-textfield"
-           
+           v-on:input="$emit('result-updated', {frame: frame, value: $event})"
+            
             :label="ocrNum"></v-text-field><v-spacer/></v-card>
   </div>
     <!-- <v-container class="ma-0 pa-0">
@@ -32,7 +33,8 @@ module.exports = {
 
   data: function() {
     return {
-      imagePath: ""
+      imagePath: "",
+      value: ""
     };
   },
 

@@ -64,6 +64,10 @@ module.exports = {
     window.app.on('file-selected', (fileName: string) => {
         this.selectedFile = fileName;
     });
+
+    window.app.on('alert', (message: string) => {
+      alert(message);
+    });
   },
   methods: {
       selectFile() {
