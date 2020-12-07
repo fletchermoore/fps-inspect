@@ -32,6 +32,12 @@ declare global {
         frame: string;
         value: string;
     }
+
+    interface CSVRow {
+        FRAME: string;
+        IMAGE: string;
+        COMMENT: string;
+    }
 }
 
 
