@@ -15,7 +15,8 @@ interface Window {
 const channelWhiteList = [
     'file-selected',
     'status-updated',
-    'image-set'
+    'image-set',
+    'results-retrieved'
 ]
 
 contextBridge.exposeInMainWorld(
@@ -27,6 +28,10 @@ contextBridge.exposeInMainWorld(
 
         test: () => {
             ipcRenderer.send('test');
+        },
+
+        retrieveResults: () => {
+            ipcRenderer.send('retrieve-results');
         },
 
         on: (channel: string, cb: any) => {

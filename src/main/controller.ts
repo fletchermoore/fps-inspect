@@ -10,13 +10,24 @@ import fs from 'fs';
 import * as files  from './files';
 import * as constants from './constants';
 import { frameFrom } from './parser';
+import { Data } from 'electron/main';
 
 
 
-interface DataPoint {
-    frame: string;
-    position: RegExpMatchArray | null;
+declare global {
+    interface DataPoint {
+        frame: string;
+        path: string;
+        position: RegExpMatchArray | null;
+    }
+
+    interface Result {
+        id: number;
+        src: string;
+        num: string;
+    }
 }
+
 
 
 export class Controller {
@@ -95,31 +106,37 @@ export class Controller {
         }       
     }
 
-    // create csv from text data
-    createDataFile = () => {
+    readData = () => {
         const matchingFiles = files.matching(this.model.outputDir(), this.model.textNamePattern())
-        const data : Array<DataPoint> = matchingFiles.map((fullPath: string) => {
-            console.log('found',fullPath);
+        const data: Array<DataPoint> = matchingFiles.map((fullPath: string) => {
+            console.log('found', fullPath);
             try {
-                const content = fs.readFileSync(fullPath, 'utf8'); 
+                const content = fs.readFileSync(fullPath, 'utf8');
                 console.log(content);
                 const pattern = /\d+/g;
                 const matches = content.match(pattern);
                 return {
                     frame: frameFrom(fullPath),
+                    path: fullPath,
                     position: matches
                 };
-            } catch(error) {
+            } catch (error) {
                 console.log(error);
                 console.log('open file failed:', fullPath);
                 return {
-                    frame: '-1',
+                    frame: frameFrom(fullPath),
+                    path: fullPath,
                     position: ['ERR']
                 }
             }
-        });        
-        console.log(data);
-        this.writeDataFile(data);
+        });
+        this.model.setData(data);
+    }
+
+    // create csv from text data
+    createDataFile = () => {
+        this.readData();
+        this.writeDataFile(this.model.getData());
     }
 
     // = () => is different from a regular function declaration
@@ -146,6 +163,11 @@ export class Controller {
                         console.log('in theory processed, try create datafile');
                         this.createDataFile();
                     })
+                }).catch((err: any) => {
+                    // extract failed because output folder already exists, likely
+                    //console.log(err);
+                    // so instead try to read all the files in that folder into the model
+                    this.readData();
                 });
             } catch (err: any) {
                 this.updateStatus(err);
@@ -175,6 +197,10 @@ export class Controller {
         }
     }
 
+    onRetrieveResults = () => {
+        this.notifyView('results-retrieved', this.model.results());
+    }
+
 
     setupIpc()
     {
@@ -186,6 +212,11 @@ export class Controller {
         const onTest = this.onTest;
         ipcMain.on('test', function (event: any) {
            onTest();
+        });
+
+        const onRetrieveResults = this.onRetrieveResults;
+        ipcMain.on('retrieve-results', function (event: any) {
+            onRetrieveResults();
         });
     }
 

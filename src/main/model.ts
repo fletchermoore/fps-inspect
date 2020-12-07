@@ -11,12 +11,43 @@ export default class Model {
     private currentFileExt = '';
     private currentFileBaseName = '';
     private currentImagePath = '';
+    private data : Array<DataPoint> = [];
 
     fileNameSubject = new BehaviorSubject('');
     statusSubject = new BehaviorSubject('Idle');
     currentImageSubject = new BehaviorSubject('');
 
     
+    setData(data: Array<DataPoint>)
+    {
+        this.data = data;
+        this.statusSubject.next('Output files read.');
+    }
+
+    getData() {
+        return this.data;
+    }
+
+    results()
+    {
+        return this.data.map((dataPoint) => {
+            let num = "ERROR";
+            if (dataPoint.position != null) {
+                num = dataPoint.position[0];
+            }
+            return {
+                id: dataPoint.frame,
+                src: this.toImagePath(dataPoint.path),
+                num: num
+            }
+        })
+    }
+
+    toImagePath(txtPath: string) { 
+        return txtPath.slice(0,-3) + "jpg";
+    }
+
+
     setCurrentFile(filePath: string)
     {
         this._videoPath = filePath;

@@ -67,7 +67,7 @@ module.exports = {
   },
   methods: {
       selectFile() {
-          //window.app.selectFile();
+          window.app.selectFile();
           // start loading
           //@ts-ignore
           this.loading = true
@@ -77,7 +77,7 @@ module.exports = {
           }, 2000);
       },
       test() {
-          window.app.test();
+          window.app.retrieveResults();
       }
   }
 };
