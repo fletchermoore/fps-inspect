@@ -25,12 +25,9 @@
     </v-container>
   </v-main>
   <v-footer fixed>
-
         <status-label /> 
         <v-spacer></v-spacer>
         <v-progress-circular v-show="loading" indeterminate size="20"></v-progress-circular>
-
-
   </v-footer>
 
 </v-app>
@@ -81,6 +78,7 @@ module.exports = {
           }, 2000);
       },
       test() {
+          window.app.test();
           window.app.retrieveResults();
       }
   }

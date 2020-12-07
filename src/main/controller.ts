@@ -10,7 +10,7 @@ import fs from 'fs';
 import * as files  from './files';
 import * as constants from './constants';
 import { frameFrom } from './parser';
-import { Data } from 'electron/main';
+//import { Data } from 'electron/main';
 
 
 
@@ -98,7 +98,7 @@ export class Controller {
     }
 
     writeDataFile = (data: Array<DataPoint>) => {
-        let content = '';
+        let content = 'FRAME,IMAGE,COMMENT' + constants.NEWLINE;
         for(let i = 0; i < data.length; i++) {
             // console.log('i',i);
             // console.log('data',data);
@@ -129,10 +129,10 @@ export class Controller {
     readData = () => {
         const matchingFiles = files.matching(this.model.outputDir(), this.model.textNamePattern())
         const data: Array<DataPoint> = matchingFiles.map((fullPath: string) => {
-            console.log('found', fullPath);
+            // console.log('found', fullPath);
             try {
                 const content = fs.readFileSync(fullPath, 'utf8');
-                console.log(content);
+                // console.log(content);
                 const pattern = /\d+/g;
                 const matches = content.match(pattern);
                 return {
@@ -155,6 +155,10 @@ export class Controller {
         this.model.setData(data);
     }
 
+    readCsv = (filePath : string) => {
+        files.readCsv(filePath);
+    }
+
     // create csv from text data
     createDataFile = () => {
         this.readData();
@@ -166,9 +170,7 @@ export class Controller {
     // not sure why this works
     onTest = () =>
     {
-        let testPath = 'C:\\Users\\fletcher\\projects\\fps-inspect\\demo\\briefradiant\\briefradiant_0100_tess.jpg'
-        this.model.setCurrentImagePath(testPath);
-        //console.log(frameFrom(testPath));
+        this.readCsv(this.model.dataFilePath());
     }
 
     onOpenFile = () => 

@@ -13,6 +13,7 @@ export default class Model {
     private currentImagePath = '';
     private data : Array<DataPoint> = [];
 
+
     fileNameSubject = new BehaviorSubject('');
     statusSubject = new BehaviorSubject('Idle');
     currentImageSubject = new BehaviorSubject('');
