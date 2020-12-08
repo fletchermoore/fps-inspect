@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="d-flex flex-wrap">
       <ocr-result v-for="result in results" 
         :key="result.id"
         :frame="result.id"
@@ -106,4 +106,5 @@ module.exports = {
 img {
   /*width: 100%;*/
 }
+
 </style>

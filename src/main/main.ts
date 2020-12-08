@@ -3,17 +3,21 @@
 var _a = require('electron'), app = _a.app, BrowserWindow = _a.BrowserWindow;
 import { protocol } from "electron";
 var path = require('path');
+const os = require('os')
 const { Controller } = require('./controller');
 
 const isDev = process.env.NODE_ENV === "development";
+
+    
+
 
 let controller = new Controller();
 
 function createWindow() {
     // Create the browser window.
     var mainWindow = new BrowserWindow({
-        width: 1600,
-        height: 600,
+        width: 1024,
+        height: 1024,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             enableRemoteModule: false,
@@ -28,6 +32,9 @@ function createWindow() {
         console.log("dev is happening!");
         mainWindow.loadURL("http://localhost:8080");
         mainWindow.webContents.openDevTools();
+        const ses = mainWindow.webContents.session;
+        ses.loadExtension('%LOCALAPPDATA%\Google\Chrome\User Data\Default\Extensions\nhdogjmejiglipccpnnnanhbledajbpd');
+        
     }
     else {
         console.log('dev didnt h appen....');
@@ -35,6 +42,7 @@ function createWindow() {
     }
     
     // Open the DevTools.
+    
     
     controller.setWindow(mainWindow);
 }

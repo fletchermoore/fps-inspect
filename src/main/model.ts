@@ -16,7 +16,7 @@ export default class Model {
 
     fileNameSubject = new BehaviorSubject('');
     statusSubject = new BehaviorSubject('Idle');
-    currentImageSubject = new BehaviorSubject('');
+    currentImageSubject = new BehaviorSubject(''); // deprecated. nobody is listening
 
     
     setData(data: Array<DataPoint>)
@@ -69,9 +69,17 @@ export default class Model {
         this.fileNameSubject.next(this.currentFileBaseName);
     }
 
+    // deprecated
     setCurrentImagePath(imagePath: string) {
         this.currentImagePath = imagePath;
         this.currentImageSubject.next(this.currentImagePath);
+    }
+
+    framePath(frame: number) {
+        // TODO: FRAME PADDING IS A HAZRD IF THIS CHANGES SOMEWHERE else
+        const filename = this.currentFileBaseName + '_' + ('000000000'+frame).slice(-4) + '.jpg';
+        const src = path.join(this.outputDir(), filename);
+        return src;
     }
 
     outputDir() {

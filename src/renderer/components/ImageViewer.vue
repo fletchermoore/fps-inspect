@@ -1,6 +1,7 @@
 <template>
     <div id="image-viewer">
       <img :src="imagePath"/>
+      <div v-show="imagePath == ''">No image loaded.</div>
     </div>    
 </template>
 
@@ -15,21 +16,9 @@ module.exports = {
   },
 
   mounted: function() {
-    let testPath = 'file:///C:\\Users\\fletcher\\projects\\fps-inspect\\demo\\briefradiant\\briefradiant_0100_tess.jpg'
-    //this.imagePath = testPath;
-      //this.imagePath = 'C:\\Users\\fletcher\\projects\\fps-inspect\\demo\\briefradiant\\briefradiant_0001_tess.jpg'
     window.app.on('image-set', (path: string) => {
       this.imagePath = path;
-    //     var viewer = document.getElementById('viewer');
-    //     if (viewer) {
-    //         let img = new Image();
-    //         img.onload = () => {
-    //             //removeChildren(viewer);
-    //             viewer?.appendChild(img);
-    //         }
-    //         img.src = path;
-    //     }
-    //     console.log('did i set image?');
+
     })
   },
   methods: {
@@ -40,6 +29,6 @@ module.exports = {
 
 <style scoped>
 img {
-  /*width: 100%;*/
+  width: 100%;
 }
 </style>

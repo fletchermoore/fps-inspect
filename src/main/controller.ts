@@ -179,6 +179,11 @@ export class Controller {
         this.readCsv(this.model.dataFilePath());
     }
 
+    loadExtracted = () => {
+        this.readData();
+        this.notifyView('image-set', this.model.framePath(1));
+    }
+
     onOpenFile = () => 
     {
         this.model.updateStatus("Selecting file...");
@@ -197,7 +202,7 @@ export class Controller {
                     // extract failed because output folder already exists, likely
                     //console.log(err);
                     // so instead try to read all the files in that folder into the model
-                    this.readData();
+                    this.loadExtracted();                    
                 });
             } catch (err: any) {
                 this.updateStatus(err);
