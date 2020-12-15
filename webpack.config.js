@@ -80,7 +80,9 @@ module.exports = {
         alias:
         {
             Components: path.resolve(__dirname, 'src/renderer/components/'),
-            Plugins: path.resolve(__dirname, 'src/renderer/plugins')
-        }
+            Plugins: path.resolve(__dirname, 'src/renderer/plugins'),
+            Common: path.resolve(__dirname, 'src/common')
+        },
+        extensions: ['.ts', '.vue', '.js']
     }
 };

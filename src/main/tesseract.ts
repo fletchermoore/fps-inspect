@@ -41,7 +41,7 @@ export class Tesseract
         try {
             await jimp.read(this.filepath).then(
                 (img: any) => {
-                    img.crop(1049, 34, 136, 27)
+                    img.crop(75, 34, 330, 138)
                         .greyscale()
                         .invert()
                         .writeAsync(this.preprocessedImagePath);

@@ -122,6 +122,8 @@ import StatusLabel from 'Components/StatusLabel.vue';
 import ImageViewer from 'Components/ImageViewer.vue';
 // @ts-ignore
 import OCRResultsView from 'Components/OCRResultsView.vue';
+// @ts-ignore
+import { TaskState } from 'Common/constants.ts';
 
 
 
@@ -149,6 +151,12 @@ module.exports = {
     window.app.on('alert', (message: string) => {
       alert(message);
     });
+
+    window.app.on('extract-status-updated', (status: string) => {
+      console.log('extract status updated:', status);
+    })
+
+    console.log(TaskState.Finished);
   },
   methods: {
       selectFile() {

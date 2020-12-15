@@ -1,0 +1,79 @@
+GE: zero echo time MRI
+
+So for this, the first approach that I'd take is yeah, a state object that gets passed around. For your UI I'd likely use a service approach - the UI understands the service, your task objects also understand the service (ie its your mediator), and the task objects pump values through the services observables.
+
+The task objects I'd use real classes as opposed to a more procedural approach (basically new instances of classes each time you use them instead of skeletons that might as well just be static references). I'd probably also look into using something like the chain of command pattern for it, so you can assemble a series of tasks, and as each one completes they just hand off to the next on and call run on that
+
+
+tasks pumps values through service observable ... UI notified
+
+task events would be... ffmpeg in progress, ffmpeg complete/error
+
+
+states can...
+
+check if ready (does file/folder exist)
+
+execute , do the task, task updates service
+
+cancel ...> return to idle state
+
+
+idle state...
+
+execute does  nothing?
+
+user initiates transition to extracting
+
+extracting state blocks further user input
+
+user can interrupt
+
+
+processing runs same task chain repeatedly
+
+task chain has state?
+
+maybe the whole thing has 
+
+
+states do things, how to abstract what they do...
+
+
+user staring at screen, task is running...
+
+state.onEntry
+.onCancel
+
+.onEntry {
+ check for file
+ then run ffmpeg
+ notify view ffmpeg is running
+ notify view ffmpeg finished
+}
+
+processOcrState
+.onEntry
+ check for file
+ run jimp
+ run tess
+ --> notify view
+ repeat
+
+.onCancel {
+ exit loop
+}
+
+
+
+to notify view, each state needs the observable
+
+single mediator... controller = service, has the current state?
+
+controller has state object, observables
+
+states make tasks, but how do they get the observables
+
+what is "notify view"
+
+mediator = UImediator

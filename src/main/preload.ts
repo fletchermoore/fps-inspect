@@ -17,7 +17,8 @@ const channelWhiteList = [
     'status-updated',
     'image-set',
     'results-retrieved',
-    'alert'
+    'alert',
+    'extract-status-updated'
 ]
 
 contextBridge.exposeInMainWorld(

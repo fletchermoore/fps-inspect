@@ -3,7 +3,8 @@ import Model from './model';
 
 import { ipcMain, dialog } from 'electron';
 
-import { Extractor } from './extractor';
+import { ExtractTask } from './extract_task';
+import { TaskState } from '../common/constants';
 import { Tesseract } from './tesseract';
 import path from 'path';
 import fs from 'fs';
@@ -193,11 +194,11 @@ export class Controller {
             this.model.updateStatus("File selected");
             try {
                 this.extractMpeg().then(() => {
-                    console.log('in theory, extracted, try process...');
-                    this.processImages().then(() => {
-                        console.log('in theory processed, try create datafile');
-                        this.createDataFile();
-                    })
+                    console.log('in theory, extracted, would process...');
+                    // this.processImages().then(() => {
+                    //     console.log('in theory processed, try create datafile');
+                    //     this.createDataFile();
+                    // })
                 }).catch((err: any) => {
                     // extract failed because output folder already exists, likely
                     //console.log(err);
@@ -214,12 +215,14 @@ export class Controller {
     }
 
     async extractMpeg() {
-        console.log('about to check before extract');
         if (!fs.existsSync(this.model.outputDir())) {
             console.log('folder doesnt exist');
             try {
-                let extractor = new Extractor(this.model.videoPath());
-                await extractor.extract();
+                let extractor = new ExtractTask(this.model.videoPath());
+                extractor.status.subscribe((status: TaskState) => {
+                    this.notifyView('extract-status-updated', status);
+                })
+                await extractor.start();
             } catch (error: any) {
                 this.updateStatus("Error during video decomposition.");
                 console.log(error);
