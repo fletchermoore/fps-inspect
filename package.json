@@ -15,7 +15,7 @@
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^5.0.1",
     "deepmerge": "^4.2.2",
-    "electron": "^11.0.0",
+    "electron": "^19.0.5",
     "fibers": "^5.0.0",
     "html-webpack-plugin": "^5.0.0-alpha.14",
     "sass": "^1.29.0",
